@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<block>
+  <name>Python Decoder</name>
+  <key>sprite_sprite_decoder_f</key>
+  <category>Sprite</category>
+  <import>import sprite</import>
+  <make>sprite.sprite_decoder_f()</make>
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>float</type>
+  </sink>
+
+</block>

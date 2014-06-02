@@ -1,0 +1,147 @@
+#!/bin/bash
+#
+# Script to install GNURadio and dependencies for Sprite receiver on Ubuntu-based systems
+# Basically follows the instructions here: http://gnuradio.org/redmine/projects/gnuradio/wiki/UbuntuInstall
+
+# Make a directory to download everything into
+mkdir ~/SpriteRadioTmp
+
+# Update package index
+sudo apt-get update
+
+case `grep DISTRIB_RELEASE /etc/lsb-release` in
+*12.04|*13)
+	# Remove possibly problematic old stuff
+	sudo apt-get -y remove gnuradio gqrx
+
+	# Install prerequisite packages
+	sudo apt-get -y install git-core cmake  libtool g++ python-dev swig pkg-config libboost1.48-all-dev libusb-1.0-0-dev libfftw3-dev libcppunit-dev libgsl0-dev libusb-dev libsdl1.2-dev python-wxgtk2.8 python-numpy python-cheetah python-lxml python-opengl python-qt4 python-qwt5-qt4 libxi-dev libqt4-opengl-dev libqwt5-qt4-dev libfontconfig1-dev libxrender-dev
+	
+	# Install GNURadio
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/gnuradio/gnuradio
+	cd gnuradio && mkdir build && cd build && cmake .. && make && sudo make install
+
+	# Install RTL-SDR Driver
+	cd ~/SpriteRadioTmp && git clone --progress https://git.osmocom.org/rtl-sdr.git
+	cd rtl-sdr && mkdir build && cd build && cmake .. -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON && make && sudo make install
+
+	# Install Funcube Pro+ Driver
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/dl1ksv/gr-fcdproplus
+	cd gr-fcdproplus && mkdir build && cd build && cmake .. && make && sudo make install
+
+	# Install RTL-SDR GNURadio Block
+	cd ~/SpriteRadioTmp && git clone --progress https://git.osmocom.org/gr-osmosdr
+	cd gr-osmosdr && mkdir build && cd build && cmake .. && make && sudo make install
+
+	# Install Sprite GNURadio Blocks
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/zacinaction/kicksat-groundstation
+	cd kicksat-groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
+
+	# Install GQRX
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/csete/gqrx
+	cd gqrx && mkdir build && cd build && qmake .. && make && sudo make install
+	
+	# Add Udev rules for Funcube dongles
+	sudo sh -c 'echo "# Udev rules for the Funcube Dongle Pro (0xfb56) and Pro+ (0xfb31)\n\n# HIDAPI/libusb:\nSUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb56" MODE:="0666"\nSUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb31" MODE:="0666"\n\n# HIDAPI/hidraw:\nKERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb56", MODE="0666"\nKERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb31", MODE="0666"\n\n" >> /etc/udev/rules.d/funcube.rules'
+
+	# Install GNURadio Launcher Icon
+	sudo /usr/local/libexec/gnuradio/grc_setup_freedesktop install
+
+	# Install GQRX Launcher Icon
+	sudo mkdir -p /usr/local/share/gqrx/freedesktop
+	cd /usr/local/share/gqrx/freedesktop
+	sudo cp ~/SpriteRadioTmp/gqrx/icons/gqrx.svg gqrx.svg
+	sudo sh -c 'echo "[Desktop Entry]\nVersion=1.0\nType=Application\nName=GQRX\nExec=gqrx\nCategories=Development;\nIcon=/usr/local/share/gqrx/freedesktop/gqrx.svg" >> gqrx.desktop'
+	sudo desktop-file-install gqrx.desktop
+	;;
+
+*13.10|*16)
+	# Remove possibly problematic old stuff
+	sudo apt-get -y remove gnuradio gqrx python-qwt5-qt4
+
+	# Install prerequisite packages
+	sudo apt-get -y install git-core cmake g++ python-dev swig pkg-config libfftw3-dev libusb-1.0-0-dev libboost1.53-all-dev libcppunit-dev libgsl0-dev libusb-dev libsdl1.2-dev python-wxgtk2.8 python-numpy python-cheetah python-lxml python-opengl libxi-dev python-sip python-sip-dev libqt4-opengl-dev libqwt-dev libfontconfig1-dev libxrender-dev libgruel3.6.1
+	
+	# Make a directory to install PyQT and PyQWT
+	sudo mkdir /opt/qt
+	
+	# Set up environment variables for PyQT and PyQWT
+	echo -e "export PATH=/opt/qt/bin:$PATH\nexport LD_LIBRARY_PATH=/opt/qt/lib:/usr/local/lib:$LD_LIBRARY_PATH\nexport PYTHONPATH=/opt/qt/lib/python2.7/dist-packages:$PYTHONPATH\nexport PKG_CONFIG_PATH=/opt/qt/lib/pkgconfig:$PKG_CONFIG_PATH" >> ~/.bashrc
+
+	# Reset environment
+	source ~/.bashrc
+
+	# Download, compile, and install PyQT
+	cd ~/SpriteRadioTmp && wget http://sourceforge.net/projects/pyqt/files/PyQt4/PyQt-4.10.3/PyQt-x11-gpl-4.10.3.tar.gz
+	tar xzf PyQt-x11-gpl-4.10.3.tar.gz
+	cd PyQt-x11-gpl-4.10.3
+	python configure.py -b /opt/qt/bin -d /opt/qt/lib/python2.7/dist-packages -v /opt/qt/share/sip
+	make
+	sudo make install
+
+	# Download, compile, and install PyQWT
+	cd ~/SpriteRadioTmp && wget http://downloads.sourceforge.net/project/pyqwt/pyqwt5/PyQwt-5.2.0/PyQwt-5.2.0.tar.gz
+	tar xzf PyQwt-5.2.0.tar.gz
+	cd PyQwt-5.2.0/configure
+	./configure.py -Q ../qwt-5.2 --module-install-path=/opt/qt/lib/python2.7/dist-packages/PyQt4/Qwt5
+	make
+	sudo make install
+	
+	# Install GNURadio
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/gnuradio/gnuradio
+	cd gnuradio && mkdir build && cd build && cmake .. && make && sudo make install
+
+	# Install RTL-SDR Driver
+	cd ~/SpriteRadioTmp && git clone --progress https://git.osmocom.org/rtl-sdr.git
+	cd rtl-sdr && mkdir build && cd build && cmake .. -DINSTALL_UDEV_RULES=ON -DDETACH_KERNEL_DRIVER=ON && make && sudo make install
+
+	# Install Funcube Pro+ Driver
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/dl1ksv/gr-fcdproplus
+	cd gr-fcdproplus && mkdir build && cd build && cmake .. && make && sudo make install
+
+	# Install RTL-SDR GNURadio Block
+	cd ~/SpriteRadioTmp && git clone --progress https://git.osmocom.org/gr-osmosdr
+	cd gr-osmosdr && mkdir build && cd build && cmake .. && make && sudo make install
+
+	# Install Sprite GNURadio Blocks
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/zacinaction/kicksat-groundstation
+	cd kicksat-groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
+
+	# Install GQRX
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/csete/gqrx
+	cd gqrx && mkdir build && cd build && qmake .. && make && sudo make install
+	
+	# Add Udev rules for Funcube dongles
+	sudo sh -c 'echo "# Udev rules for the Funcube Dongle Pro (0xfb56) and Pro+ (0xfb31)\n\n# HIDAPI/libusb:\nSUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb56" MODE:="0666"\nSUBSYSTEMS=="usb" ATTRS{idVendor}=="04d8" ATTRS{idProduct}=="fb31" MODE:="0666"\n\n# HIDAPI/hidraw:\nKERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb56", MODE="0666"\nKERNEL=="hidraw*", ATTRS{busnum}=="1", ATTRS{idVendor}=="04d8", ATTRS{idProduct}=="fb31", MODE="0666"\n\n" >> /etc/udev/rules.d/funcube.rules'
+
+	# Install GNURadio Launcher Icon
+	sudo /usr/local/libexec/gnuradio/grc_setup_freedesktop install
+
+	# Install GQRX Launcher Icon
+	sudo mkdir -p /usr/local/share/gqrx/freedesktop
+	cd /usr/local/share/gqrx/freedesktop
+	sudo cp ~/SpriteRadioTmp/gqrx/icons/gqrx.svg gqrx.svg
+	sudo sh -c 'echo "[Desktop Entry]\nVersion=1.0\nType=Application\nName=GQRX\nExec=gqrx\nCategories=Development;\nIcon=/usr/local/share/gqrx/freedesktop/gqrx.svg" >> gqrx.desktop'
+	sudo desktop-file-install gqrx.desktop
+	;;
+	
+*14.04)
+	# Install prerequisite packages
+	sudo apt-get -y install gnuradio gnuradio-dev gr-fcdproplus gr-osmosdr gqrx-sdr git-core cmake g++ python-dev swig pkg-config libboost-all-dev libcppunit-dev liblog4cpp5-dev
+	
+	# Install Sprite GNURadio Blocks
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/zacinaction/kicksat-groundstation
+	cd kicksat-groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
+	;;
+esac
+
+# Add GNURadio config file telling GRC where to look for new blocks 
+if [ ! -d ~/.gnuradio ]; then
+	mkdir ~/.gnuradio
+fi
+echo -e "[grc]\nlocal_blocks_path=/usr/local/share/gnuradio/grc/blocks" >> ~/.gnuradio/config.conf
+
+# Delete downloaded files
+rm -Rf ~/SpriteRadioTmp
+
+exit 0
