@@ -34,8 +34,8 @@ case `grep DISTRIB_RELEASE /etc/lsb-release` in
 	cd gr-osmosdr && mkdir build && cd build && cmake .. && make && sudo make install
 
 	# Install Sprite GNURadio Blocks
-	cd ~/SpriteRadioTmp && git clone --progress https://github.com/zacinaction/kicksat-groundstation
-	cd kicksat-groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/kicksat/groundstation
+	cd groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
 
 	# Install GQRX
 	cd ~/SpriteRadioTmp && git clone --progress https://github.com/csete/gqrx
@@ -104,8 +104,8 @@ case `grep DISTRIB_RELEASE /etc/lsb-release` in
 	cd gr-osmosdr && mkdir build && cd build && cmake .. && make && sudo make install
 
 	# Install Sprite GNURadio Blocks
-	cd ~/SpriteRadioTmp && git clone --progress https://github.com/zacinaction/kicksat-groundstation
-	cd kicksat-groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/kicksat/groundstation
+	cd groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
 
 	# Install GQRX
 	cd ~/SpriteRadioTmp && git clone --progress https://github.com/csete/gqrx
@@ -125,13 +125,13 @@ case `grep DISTRIB_RELEASE /etc/lsb-release` in
 	sudo desktop-file-install gqrx.desktop
 	;;
 	
-*14.04)
+*14.04|*17)
 	# Install prerequisite packages
 	sudo apt-get -y install gnuradio gnuradio-dev gr-fcdproplus gr-osmosdr gqrx-sdr git-core cmake g++ python-dev swig pkg-config libboost-all-dev libcppunit-dev liblog4cpp5-dev
 	
 	# Install Sprite GNURadio Blocks
-	cd ~/SpriteRadioTmp && git clone --progress https://github.com/zacinaction/kicksat-groundstation
-	cd kicksat-groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/kicksat/groundstation
+	cd groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
 	;;
 esac
 
