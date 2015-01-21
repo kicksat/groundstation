@@ -29,20 +29,22 @@ namespace gr {
   namespace sprite {
 
     peak_decimator_ff::sptr
-    peak_decimator_ff::make()
+    peak_decimator_ff::make(int window_size)
     {
       return gnuradio::get_initial_sptr
-        (new peak_decimator_ff_impl());
+        (new peak_decimator_ff_impl(window_size));
     }
 
     /*
      * The private constructor
      */
-    peak_decimator_ff_impl::peak_decimator_ff_impl()
+    peak_decimator_ff_impl::peak_decimator_ff_impl(int window_size)
       : gr::sync_decimator("peak_decimator_ff",
               gr::io_signature::make(1, 1, sizeof(float)),
-              gr::io_signature::make(1, 1, sizeof(float)), SPRITE_DECIM_RATE)
-    {}
+              gr::io_signature::make(1, 1, sizeof(float)), window_size)
+    {
+	m_window = window_size;
+    }
 
     /*
      * Our virtual destructor.
@@ -64,7 +66,7 @@ namespace gr {
           m_min = 0;
           m_max = 0;
 
-          for(int j = SPRITE_DECIM_RATE*k; j < SPRITE_DECIM_RATE*(k+1); ++j)
+          for(int j = m_window*k; j < m_window*(k+1); ++j)
           {
             if(in[j] > m_max)
             {

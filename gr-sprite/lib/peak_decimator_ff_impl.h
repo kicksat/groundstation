@@ -23,8 +23,6 @@
 
 #include <sprite/peak_decimator_ff.h>
 
-#define SPRITE_DECIM_RATE 256
-
 namespace gr {
   namespace sprite {
 
@@ -33,9 +31,10 @@ namespace gr {
       private:  
         float m_min;
         float m_max;
+	int m_window;
 
       public:
-        peak_decimator_ff_impl();
+        peak_decimator_ff_impl(int window_size);
         ~peak_decimator_ff_impl();
 
       // Where all the action really happens

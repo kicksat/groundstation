@@ -4,7 +4,18 @@
   <key>sprite_peak_decimator_ff</key>
   <category>Sprite</category>
   <import>import sprite</import>
-  <make>sprite.peak_decimator_ff()</make>
+  <make>sprite.peak_decimator_ff($window_size)</make>
+
+  <!-- Make one 'param' node for every Parameter you want settable from the GUI.
+       Sub-nodes:
+       * name
+       * key (makes the value accessible as $keyname, e.g. in the make node)
+       * type -->
+  <param>
+    <name>Window Size</name>
+    <key>window_size</key>
+    <type>int</type>
+  </param>
 
   <!-- Make one 'sink' node per input. Sub-nodes:
        * name (an identifier for the GUI)

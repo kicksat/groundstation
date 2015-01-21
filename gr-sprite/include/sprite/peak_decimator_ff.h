@@ -46,7 +46,7 @@ namespace gr {
        * class. sprite::peak_decimator_ff::make is the public interface for
        * creating new instances.
        */
-      static sptr make();
+      static sptr make(int window_size);
     };
 
   } // namespace sprite
