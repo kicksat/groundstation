@@ -28,11 +28,11 @@ class soft_decoder_c(gr.sync_block):
     """
     docstring for block soft_decoder_c
     """
-    def __init__(self):
+    def __init__(self, threshold):
         gr.sync_block.__init__(self, name="soft_decoder_c", in_sig=[complex64], out_sig=[])
 
         self.set_history(30)
-        self._detection_threshold = .85
+        self._detection_threshold = threshold
     
         self._preamble = array([1, 1, 1, -1, -1, 1, -1], dtype=float32)
         self._postamble = array([1, -1, 1, 1, -1, -1, -1], dtype=float32)

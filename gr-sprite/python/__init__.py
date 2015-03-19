@@ -45,7 +45,7 @@ if _RTLD_GLOBAL != 0:
 from sprite_swig import *
 
 # import any pure python here
-from sprite_decoder_f import sprite_decoder_f
+
 from soft_decoder_c import soft_decoder_c
 #
 

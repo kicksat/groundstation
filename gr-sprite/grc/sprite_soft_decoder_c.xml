@@ -1,10 +1,16 @@
 <?xml version="1.0"?>
 <block>
-  <name>Python Decoder 2</name>
+  <name>Soft Decoder</name>
   <key>sprite_soft_decoder_c</key>
   <category>Sprite</category>
   <import>import sprite</import>
-  <make>sprite.soft_decoder_c()</make>
+  <make>sprite.soft_decoder_c($threshold)</make>
+
+  <param>
+    <name>Threshold</name>
+    <key>threshold</key>
+    <type>float</type>
+  </param>
 
   <!-- Make one 'sink' node per input. Sub-nodes:
        * name (an identifier for the GUI)
