@@ -29,17 +29,17 @@ class soft_decoder_c(gr.sync_block):
     docstring for block soft_decoder_c
     """
     def __init__(self):
-        gr.sync_block.__init__(self, name="soft_decoder_c", in_sig=[np.complex64], out_sig=[])
+        gr.sync_block.__init__(self, name="soft_decoder_c", in_sig=[complex64], out_sig=[])
     
         self.set_history(30)
 
         self._detection_threshold = .85
     
-        self._preample = np.array([1, 1, 1, -1, -1, 1, -1], dtype=np.float32)
-        self._postamble = np.array([1, -1, 1, 1, -1, -1, -1], dtype=np.float32)
-        self._template = np.hstack(self._preamble, np.zeros(16), self._postamble, dtype=np.float32)/sqrt(14)
+        self._preamble = array([1, 1, 1, -1, -1, 1, -1], dtype=float32)
+        self._postamble = array([1, -1, 1, 1, -1, -1, -1], dtype=float32)
+        self._template = hstack([self._preamble, zeros(16, dtype=float32), self._postamble])/sqrt(14)
 
-        self._C = np.array([
+        self._C = array([
             [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
             [1, 1, -1, 1, -1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, 1],
             [-1, 1, 1, 1, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1],
@@ -296,12 +296,12 @@ class soft_decoder_c(gr.sync_block):
             [-1, 1, 1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, 1, -1, 1],
             [1, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1],
             [-1, -1, -1, 1, -1, 1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1]
-            ], dtype=np.float32)/sqrt(16)
+            ], dtype=float32)/sqrt(16)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
         
-        for k in range(0, len(output_items[0])):
+        for k in range(0, len(in0)-29):
             
             cor = dot(in0[k:k+30], self._template)
             if cor.real > self._detection_threshold and cor.real >= cor.imag:
@@ -310,11 +310,11 @@ class soft_decoder_c(gr.sync_block):
                 if max(cor2) > self._detection_threshold:
                     print(chr(argmax(cor2)), end='')
                     
-            else if cor.imag > self._detection_threshold and cor.imag > cor.real:
+            elif cor.imag > self._detection_threshold and cor.imag > cor.real:
                 codeword = imag(in0[k+7:k+23])
                 cor2 = dot(C,codeword)/sqrt(dot(codeword,codeword))
                 if max(cor2) > self._detection_threshold:
                     print(chr(argmax(cor2)), end='')
 
-        return len(output_items[0])
+        return k+1
 
