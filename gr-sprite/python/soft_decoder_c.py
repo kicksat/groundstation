@@ -30,9 +30,8 @@ class soft_decoder_c(gr.sync_block):
     """
     def __init__(self):
         gr.sync_block.__init__(self, name="soft_decoder_c", in_sig=[complex64], out_sig=[])
-    
-        self.set_history(30)
 
+        self.set_history(30)
         self._detection_threshold = .85
     
         self._preamble = array([1, 1, 1, -1, -1, 1, -1], dtype=float32)
@@ -300,21 +299,33 @@ class soft_decoder_c(gr.sync_block):
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
-        
-        for k in range(0, len(in0)-29):
+
+        k = 0
+        max_index = len(in0)-29
+        while k < max_index:
             
-            cor = dot(in0[k:k+30], self._template)
-            if cor.real > self._detection_threshold and cor.real >= cor.imag:
+            cor1 = dot(real(in0[k:k+30]), self._template)/sqrt(dot(real(in0[k:k+7]),real(in0[k:k+7]))+dot(real(in0[k+23:k+30]),real(in0[k+23:k+30])))
+            cor2 = dot(imag(in0[k:k+30]), self._template)/sqrt(dot(imag(in0[k:k+7]),imag(in0[k:k+7]))+dot(imag(in0[k+23:k+30]),imag(in0[k+23:k+30])))
+            
+            if cor1 > self._detection_threshold:
                 codeword = real(in0[k+7:k+23])
-                cor2 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
-                if max(cor2) > self._detection_threshold:
-                    print(chr(argmax(cor2)), end='')
+                cor3 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
+                k += 30
+                if max(cor3) > self._detection_threshold:
+                    print(chr(argmax(cor3)), end='')
                     
-            elif cor.imag > self._detection_threshold and cor.imag > cor.real:
+            elif cor2 > self._detection_threshold:
                 codeword = imag(in0[k+7:k+23])
-                cor2 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
-                if max(cor2) > self._detection_threshold:
-                    print(chr(argmax(cor2)), end='')
+                cor3 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
+                k += 30
+                if max(cor3) > self._detection_threshold:
+                    print(chr(argmax(cor3)), end='')
+            else:
+                k += 1
 
-        return k+1
-
+        if max_index < 1:
+            return 0
+        elif k > max_index:
+            return k
+        else:
+            return max_index
