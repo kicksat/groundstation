@@ -31,7 +31,8 @@ endif()
 GR_PYTHON_INSTALL(
     FILES
     __init__.py
-    sprite_decoder_f.py DESTINATION ${GR_PYTHON_DIR}/sprite
+    sprite_decoder_f.py
+    soft_decoder_c.py DESTINATION ${GR_PYTHON_DIR}/sprite
 )
 
 ########################################################################
