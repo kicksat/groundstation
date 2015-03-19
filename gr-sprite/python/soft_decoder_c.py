@@ -306,13 +306,13 @@ class soft_decoder_c(gr.sync_block):
             cor = dot(in0[k:k+30], self._template)
             if cor.real > self._detection_threshold and cor.real >= cor.imag:
                 codeword = real(in0[k+7:k+23])
-                cor2 = dot(C,codeword)/sqrt(dot(codeword,codeword))
+                cor2 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
                 if max(cor2) > self._detection_threshold:
                     print(chr(argmax(cor2)), end='')
                     
             elif cor.imag > self._detection_threshold and cor.imag > cor.real:
                 codeword = imag(in0[k+7:k+23])
-                cor2 = dot(C,codeword)/sqrt(dot(codeword,codeword))
+                cor2 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
                 if max(cor2) > self._detection_threshold:
                     print(chr(argmax(cor2)), end='')
 
