@@ -4,15 +4,21 @@
   <key>sprite_correlator_cf</key>
   <category>Sprite</category>
   <import>import sprite</import>
-  <make>sprite.correlator_cf($prn_id)</make>
+  <make>sprite.correlator_cf($prn_id0, $prn_id1)</make>
   <!-- Make one 'param' node for every Parameter you want settable from the GUI.
        Sub-nodes:
        * name
        * key (makes the value accessible as $keyname, e.g. in the make node)
        * type -->
   <param>
-    <name>PRN ID</name>
-    <key>prn_id</key>
+    <name>PRN 0 ID</name>
+    <key>prn_id0</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>PRN 1 ID</name>
+    <key>prn_id1</key>
     <type>int</type>
   </param>
 

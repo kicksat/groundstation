@@ -34,8 +34,9 @@ class soft_decoder_c(gr.sync_block):
         self.set_history(30)
         self._detection_threshold = threshold
     
-        self._preamble = array([1, 1, 1, -1, -1, 1, -1], dtype=float32)/sqrt(30)
-        self._postamble = array([1, -1, 1, 1, -1, -1, -1], dtype=float32)/sqrt(30)
+        self._preamble = array([1, 1, 1, -1, -1, 1, -1], dtype=float32)
+        self._postamble = array([1, -1, 1, 1, -1, -1, -1], dtype=float32)
+        self._template = hstack([self._preamble, zeros(16, dtype=float32), self._postamble])/sqrt(14)
 
         self._C = array([
             [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -294,7 +295,7 @@ class soft_decoder_c(gr.sync_block):
             [-1, 1, 1, -1, 1, 1, -1, -1, 1, 1, 1, 1, 1, 1, -1, 1],
             [1, 1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, -1],
             [-1, -1, -1, 1, -1, 1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1]
-            ], dtype=float32)/sqrt(30)
+            ], dtype=float32)/sqrt(16)
 
     def work(self, input_items, output_items):
         in0 = input_items[0]
@@ -302,22 +303,30 @@ class soft_decoder_c(gr.sync_block):
         k = 0
         max_index = len(in0)-29
         while k < max_index:
+            
+            cor1 = dot(real(in0[k:k+30]), self._template)/sqrt(dot(real(in0[k:k+7]),real(in0[k:k+7]))+dot(real(in0[k+23:k+30]),real(in0[k+23:k+30])))
+            cor2 = dot(imag(in0[k:k+30]), self._template)/sqrt(dot(imag(in0[k:k+7]),imag(in0[k:k+7]))+dot(imag(in0[k+23:k+30]),imag(in0[k+23:k+30])))
+            
 
-            inI = real(in0[k:k+30])/sqrt(dot(real(in0[k:k+30]),real(in0[k:k+30])))
-            inQ = imag(in0[k:k+30])/sqrt(dot(imag(in0[k:k+30]),imag(in0[k:k+30])))
+            if cor1 > self._detection_threshold and cor1 >= cor2:
+                codeword = real(in0[k+7:k+23])
+                cor3 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
+                if max(cor3) > self._detection_threshold:
+                    k += 30
+                    print(chr(argmax(cor3)), end='')
+                else:
+                    k += 1
 
-            corI = dot(self._C, inI[7:23]) + dot(self._preamble, inI[0:7]) + dot(self._postamble, inI[23:30])
-            corQ = dot(self._C, inI[7:23]) + dot(self._preamble, inI[0:7]) + dot(self._postamble, inI[23:30])
+                    
+            elif cor2 > self._detection_threshold:
+                codeword = imag(in0[k+7:k+23])
+                cor3 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
+                if max(cor3) > self._detection_threshold:
+                    k += 30
+                    print(chr(argmax(cor3)), end='')
+                else:
+                    k += 1
 
-            corImax = max(corI)
-            corQmax = max(corQ)
-
-            if corImax > self._detection_threshold and corImax > corQmax:
-                  k += 30
-                  print(chr(argmax(corI)), end='')
-            elif corQmax > self._detection_threshold:
-                  k += 30
-                  print(chr(argmax(corQ)), end='')
             else:
                 k += 1
 

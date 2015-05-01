@@ -46,7 +46,7 @@ namespace gr {
        * class. sprite::correlator_cf::make is the public interface for
        * creating new instances.
        */
-      static sptr make(int prn_id);
+      static sptr make(int prn_id0, int prn_id1);
     };
 
   } // namespace sprite
