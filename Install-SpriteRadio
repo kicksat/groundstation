@@ -133,6 +133,15 @@ case `grep DISTRIB_RELEASE /etc/lsb-release` in
 	cd ~/SpriteRadioTmp && git clone --progress https://github.com/kicksat/groundstation
 	cd groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
 	;;
+
+*16.04)
+	# Install prerequisite packages
+	sudo apt-get -y install gnuradio gnuradio-dev gr-fcdproplus gr-osmosdr gqrx-sdr git cmake g++ python-dev swig pkg-config libboost-all-dev libcppunit-dev liblog4cpp5-dev
+	
+	# Install Sprite GNURadio Blocks
+	cd ~/SpriteRadioTmp && git clone --progress https://github.com/kicksat/groundstation
+	cd groundstation/gr-sprite && mkdir build && cd build && cmake .. && make && sudo make install && sudo ldconfig
+	;;
 esac
 
 # Add GNURadio config file telling GRC where to look for new blocks 
