@@ -49,10 +49,17 @@ namespace gr {
               gr::io_signature::make(1, 1, sizeof(gr_complex)),
               gr::io_signature::make(1, 1, sizeof(float)))
     {
-      set_history(SPRITE_PRN_LENGTH);
+      set_history(SPRITE_BIT_LENGTH);
 
       generate_prns(prn_id0, prn_id1);
   
+      //Zero out templates
+      for (int k = 0; k < SPRITE_BIT_LENGTH; k++)
+      {
+        m_template0[k] = 0.0;
+        m_template1[k] = 0.0;
+      }
+
       cc430_modulator(m_prn0, m_template0);
       cc430_modulator(m_prn1, m_template1);
       for (int k = 0; k < SPRITE_PRN_LENGTH; k++)
@@ -61,11 +68,11 @@ namespace gr {
         m_template1[k] = conj(m_template1[k]);
       }
       
-      m_fft0 = new fft::fft_complex(SPRITE_PRN_LENGTH, true, 1);
+      m_fft0 = new fft::fft_complex(SPRITE_BIT_LENGTH, true, 1);
       m_fft_buffer_in0 = m_fft0->get_inbuf();
       m_fft_buffer_out0 = m_fft0->get_outbuf();
 
-      m_fft1 = new fft::fft_complex(SPRITE_PRN_LENGTH, true, 1);
+      m_fft1 = new fft::fft_complex(SPRITE_BIT_LENGTH, true, 1);
       m_fft_buffer_in1 = m_fft1->get_inbuf();
       m_fft_buffer_out1 = m_fft1->get_outbuf();
     }
@@ -167,7 +174,7 @@ namespace gr {
       else if(prn_id1 == -1)
       { 
         //Deep copy M-sequence
-        for (int k = 0; k < M_SEQUENCE_LENGTH; k++)
+        for (int k = 0; k < M_SEQUENCE_LENGTH; ++k)
         {
           m_prn1[k] = mseq2[k];
         }
@@ -175,7 +182,7 @@ namespace gr {
       else //if(prn_id >= 0 && prn_id < M_SEQUENCE_LENGTH)
       { 
         //Generate Gold Codes by xor'ing 2 M-sequences in different phases
-        for (int k = 0; k < M_SEQUENCE_LENGTH-prn_id1; k++)
+        for (int k = 0; k < M_SEQUENCE_LENGTH-prn_id1; ++k)
         {
           m_prn1[k] = mseq1[k] ^ mseq2[k+prn_id1];
         }
@@ -189,8 +196,8 @@ namespace gr {
 
     }
 
-    int
-    correlator_cf_impl::work(int noutput_items,
+
+    int correlator_cf_impl::work(int noutput_items,
 			  gr_vector_const_void_star &input_items,
 			  gr_vector_void_star &output_items)
     {
@@ -201,7 +208,7 @@ namespace gr {
         for(int k = 0; k < noutput_items; ++k) {
           
           //Pointwise multiply by baseband template and copy to fft input
-          for (int j = 0; j < SPRITE_PRN_LENGTH; ++j)
+          for (int j = 0; j < SPRITE_BIT_LENGTH; ++j)
           {
             m_fft_buffer_in0[j] = m_template0[j]*in[j+k];
             m_fft_buffer_in1[j] = m_template1[j]*in[j+k];
@@ -215,7 +222,7 @@ namespace gr {
           float mag0 = real(m_fft_buffer_out0[0]*conj(m_fft_buffer_out0[0]));
           float max0 = mag0;
           float index0 = 0;
-          for (int j = 1; j < SPRITE_PRN_LENGTH; ++j)
+          for (int j = 1; j < SPRITE_BIT_LENGTH; ++j)
           {
             mag0 = real(m_fft_buffer_out0[j]*conj(m_fft_buffer_out0[j]));
             if (mag0 > max0)
@@ -227,7 +234,7 @@ namespace gr {
           float mag1 = real(m_fft_buffer_out1[0]*conj(m_fft_buffer_out1[0]));
           float max1 = mag1;
           float index1 = 0;
-          for (int j = 1; j < SPRITE_PRN_LENGTH; ++j)
+          for (int j = 1; j < SPRITE_BIT_LENGTH; ++j)
           {
             mag1 = real(m_fft_buffer_out1[j]*conj(m_fft_buffer_out1[j]));
             if (mag1 > max1)
