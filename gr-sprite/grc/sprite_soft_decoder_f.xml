@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <block>
-  <name>Soft Decoder</name>
+  <name>Old Sprite Decoder</name>
   <key>sprite_soft_decoder_f</key>
   <category>Sprite</category>
   <import>import sprite</import>

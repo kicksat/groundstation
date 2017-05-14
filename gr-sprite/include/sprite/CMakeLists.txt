@@ -24,6 +24,6 @@ install(FILES
     api.h
     correlator_cf.h
     peak_decimator_ff.h
-    #soft_decoder_f.h
+    soft_decoder_f.h
     DESTINATION include/sprite
 )

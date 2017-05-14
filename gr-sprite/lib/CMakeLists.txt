@@ -28,7 +28,7 @@ link_directories(${Boost_LIBRARY_DIRS})
 list(APPEND sprite_sources
     correlator_cf_impl.cc
     peak_decimator_ff_impl.cc
-    #soft_decoder_f_impl.cc
+    soft_decoder_f_impl.cc
     )
 
 add_library(gnuradio-sprite SHARED ${sprite_sources})
