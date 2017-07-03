@@ -21,3 +21,4 @@
 *.app
 
 top_block.py
+build/
