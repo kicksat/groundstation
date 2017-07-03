@@ -31,12 +31,12 @@ class soft_decoder_c(gr.sync_block):
     def __init__(self, threshold):
         gr.sync_block.__init__(self, name="soft_decoder_c", in_sig=[complex64], out_sig=[])
 
-        self.set_history(30)
+        self.set_history(22)
         self._detection_threshold = threshold
     
-        self._preamble = array([1, 1, 1, -1, -1, 1, -1], dtype=float32)
-        self._postamble = array([1, -1, 1, 1, -1, -1, -1], dtype=float32)
-        self._template = hstack([self._preamble, zeros(16, dtype=float32), self._postamble])/sqrt(14)
+        self._preamble = array([1, -1, 1], dtype=float32)/sqrt(3)
+        self._postamble = array([-1, 1, -1], dtype=float32)/sqrt(3)
+        self._template = hstack([self._preamble, zeros(16, dtype=float32), self._postamble])
 
         self._C = array([
             [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
@@ -301,28 +301,28 @@ class soft_decoder_c(gr.sync_block):
         in0 = input_items[0]
 
         k = 0
-        max_index = len(in0)-29
+        max_index = len(in0)-21
         while k < max_index:
             
-            cor1 = dot(real(in0[k:k+30]), self._template)/sqrt(dot(real(in0[k:k+7]),real(in0[k:k+7]))+dot(real(in0[k+23:k+30]),real(in0[k+23:k+30])))
-            cor2 = dot(imag(in0[k:k+30]), self._template)/sqrt(dot(imag(in0[k:k+7]),imag(in0[k:k+7]))+dot(imag(in0[k+23:k+30]),imag(in0[k+23:k+30])))
+            cor1 = dot(real(in0[k:k+22]), self._template)/sqrt(dot(real(in0[k:k+3]),real(in0[k:k+3]))+dot(real(in0[k+19:k+22]),real(in0[k+19:k+22])))
+            cor2 = dot(imag(in0[k:k+22]), self._template)/sqrt(dot(imag(in0[k:k+3]),imag(in0[k:k+3]))+dot(imag(in0[k+19:k+22]),imag(in0[k+19:k+22])))
             
 
             if cor1 > self._detection_threshold and cor1 >= cor2:
-                codeword = real(in0[k+7:k+23])
+                codeword = real(in0[k+3:k+19])
                 cor3 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
                 if max(cor3) > self._detection_threshold:
-                    k += 30
+                    k += 22
                     print(chr(argmax(cor3)), end='')
                 else:
                     k += 1
 
                     
             elif cor2 > self._detection_threshold:
-                codeword = imag(in0[k+7:k+23])
+                codeword = imag(in0[k+3:k+19])
                 cor3 = dot(self._C,codeword)/sqrt(dot(codeword,codeword))
                 if max(cor3) > self._detection_threshold:
-                    k += 30
+                    k += 22
                     print(chr(argmax(cor3)), end='')
                 else:
                     k += 1
