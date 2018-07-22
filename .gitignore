@@ -20,4 +20,5 @@
 *.out
 *.app
 
+*.pyc
 top_block.py
