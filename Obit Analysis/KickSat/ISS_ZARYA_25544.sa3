@@ -1,0 +1,188 @@
+VO_V110		
+InitializeSolarPanels		 No
+Modelfile		 Space\iss.mdl
+UseCatalogModelFile		 Yes
+ModelDefaultColorFromMarker		 No
+IgnoreModelBoundRadius		 No
+IsShowingModel		 Yes
+ModelScale		 1
+IsSwapped		 Yes
+Level0SwapDistance		 700
+Level1SwapDistance		 1400
+Level2SwapDistance		 2.8e+07
+Level3SwapDistance		 5.6e+07
+Level4SwapDistance		 1.12e+08
+ShowMarker		 Yes
+BEGIN Marker
+    Show		 Yes
+    Type		 LineGraphic
+    Shape		 Point
+    IsTransparent		 No
+    OneOneBlend		 No
+    Rotate		 No
+    Angle		 0
+    HorizOrigin		 Center
+    VertOrigin		 Center
+    MinSize		 5
+    SizeInMeters		 No
+    RotateRelToNorth		 No
+    UseDirectionAngle		 No
+END
+BEGIN GlintMarker
+    Show		 No
+    Type		 LineGraphic
+    Shape		 Point
+    IsTransparent		 No
+    OneOneBlend		 No
+    Rotate		 No
+    Angle		 0
+    HorizOrigin		 Center
+    VertOrigin		 Center
+    MinSize		 5
+    SizeInMeters		 No
+    RotateRelToNorth		 No
+    UseDirectionAngle		 No
+END
+BEGIN OrbitFrames
+    InertialCoordFrame		 Yes
+    PersistCBIForAllPasses		 No
+    FixedCoordFrame		 No
+    PersistCBFForAllPasses		 No
+END OrbitFrames
+BEGIN Covariance
+    UseProbability		 Yes
+    Probability		 95
+    Scale		 2.79548
+    NonIntervalLineWidth		 1
+    NonIntervalTranslucency		 0
+    NonIntervalShow		 No
+    NonIntervalColorIndex		 #ffffff
+    DefaultIntervalLineWidth		 1
+    DefaultIntervalTranslucency		 0
+    DefaultIntervalShow		 Yes
+    DefaultIntervalColorIndex		 #00ff00
+    UseIntervals		 No
+    UseEllipticCoord		 No
+END
+BEGIN PointingCovarianceList
+    FixScaleToModel		 Yes
+    ConeScale		 50000
+END
+UseModelFilePosOffset		 No
+UseModelPosOffset		 No
+ModelPosOffset		 0.0000000000000000e+00 0.0000000000000000e+00 0.0000000000000000e+00
+UseModelRotation		 No
+ModelRotation		 0.0000000000000000e+00 0.0000000000000000e+00 0.0000000000000000e+00
+DontSaveArticFile		 No
+ArticulationFileEnabled		 No
+ObscurationToObject		 No
+Inherit2DPassGfx		 No
+GtLeadingType		 OnePass
+GtTrailingType		 OnePass
+OrbitLeadingType		 OnePass
+OrbitTrailingType		 OnePass
+GtArcDrawRouteOnSurface		 No
+FixVectorAxesScaleToModel		 Yes
+FixVectorAxesScaleToAttSph		 No
+VectorAxesAngleSwapDist		 -0.5
+PlaneSwapDist		 -2.5
+BEGIN GeneralVectorAxes
+    PersistentLineWidth		 2
+    Scale		 15.8489319246
+END
+BEGIN VectorAngle
+    FractionalScale		 1
+    SupportingDihedralArcLineWidth		 1
+    ArcLineWidth		 2
+    PixelThreshold		 1
+END
+BEGIN Plane
+END
+SetModelColorArtic		 No
+SaveArticStateAsDef		 No
+ShowElevFov		 No
+ShowElevFovCones		 Yes
+ElevFovTranslucency		 0.7
+ShowElevContourFill		 No
+ElevContourFillTranslucency		 0.5
+ShowRangeContours		 No
+TranslRangeCntrLines		 No
+RangeCntrLineTransl		 0.7
+RangeLblSwapDist		 -2.5
+AOULblSwapDist		 -1.5
+BorderWallShowOnOff		 No
+BorderWallUseTerrainAltFileOnOff		 No
+BorderWallTransparencyOnOff		 No
+BorderWallLineTransparencyOnOff		 No
+BorderWallTransparency		 0.699999988079071
+BorderWallLineTransparency		 0.699999988079071
+BorderWallTopCapType		 WGS84
+BorderWallTopCap		 0
+BorderWallBotCapType		 WGS84
+BorderWallBotCap		 0
+BorderWallSampleRate		 2
+ShowSAAContour		 No
+IsShowingGeoBox		 No
+GeoBoxColorIndex		 #ff0000
+GeoBoxNS		 1.7453292519943295e-02
+GeoBoxEW		 1.7453292519943295e-02
+GeoBoxTickSpacing		 3.4906585039886592e-03
+TrkTickFrequencyTime		 60
+ShowOrbTrkTicks		 No
+OrbTrkTickWidth		 50000
+OrbTrkPointSize		 3
+OrbTrkLinWidth		 1
+OrbTrkStyle		 Radial
+ShowGrdTrkTicks		 No
+GrdTrkTickWidth		 50000
+GrdTrkPointSize		 3
+GrdTrkLinWidth		 1
+GrdTrkStyle		 CrossTrack
+UseObjLineAttachPt		 No
+DropLinesTo		 Ellipsoid
+IsShowingVaporTrail		 No
+VaporMaxPuffs		 100
+VaporColorIndex		 #ffffff
+VaporWindSpeed		 0 0 0
+VaporIsInSpace		 No
+VaporUseAttachPoint		 No
+VaporOutputRate		 5.0000000000000000e-01
+VaporRadius		 1000
+VaporExpansionRate		 0.01
+VaporStartTime		 0
+VaporEndTime		 15638400
+VaporIntervalPtr		
+BEGIN EVENTINTERVAL
+    EventInterval		
+    BEGIN EVENTINTERVAL
+        Type		 EVENTINTERVAL_LINKTO
+        Name		 AnalysisInterval
+        AbsolutePath		 Scenario
+    END EVENTINTERVAL
+    IntervalState		 Implicit
+END EVENTINTERVAL
+
+VaporTexturemap		 smoke.pgm
+BEGIN Point
+    Show		 No
+    Size		 5
+END Point
+UseLabelOffset		 No
+LabelOffsetInPixels		 No
+LabelXYZ		 0 10 10
+ShowGroundMarker		 No
+BEGIN GroundMarker
+    Show		 No
+    Type		 LineGraphic
+    Shape		 Point
+    IsTransparent		 No
+    OneOneBlend		 No
+    Rotate		 No
+    Angle		 0
+    HorizOrigin		 Center
+    VertOrigin		 Center
+    MinSize		 5
+    SizeInMeters		 No
+    RotateRelToNorth		 No
+    UseDirectionAngle		 No
+END
